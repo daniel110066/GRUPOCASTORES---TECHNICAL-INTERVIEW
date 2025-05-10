@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Iniciar sesión</title>
+</head>
+<body>
+    <div style="display: flex; justify-content: center; align-items: center; height: 100vh;">
+        <div style="border: 1px solid #ccc; padding: 40px; border-radius: 8px; width: 350px; text-align: center;">
+
+            <h2 style="margin-bottom: 5px;">Iniciar sesión</h2>
+            <p style="margin-top: 0;">Acceso al sistema de inventario</p>
+
+            <form th:action="@{/login}" method="post" style="display: flex; flex-direction: column; gap: 15px; margin-top: 20px;">
+                
+                <div style="text-align: left;">
+                    <label for="username">Email</label><br/>
+                    <input type="text" name="username" id="username" required placeholder="Email"
+                        style="width: 100%; padding: 8px;" />
+                </div>
+
+                <div style="text-align: left;">
+                    <label for="password">Contraseña</label><br/>
+                    <input type="password" name="password" id="password" required placeholder="Contraseña"
+                        style="width: 100%; padding: 8px;" />
+                </div>
+
+                <button type="submit" style="padding: 10px; width: 100%; background: black; color: white; border: none;">
+                    Iniciar sesión
+                </button>
+                
+            </form>
+        </div>
+    </div>
+</body>
+</html>
