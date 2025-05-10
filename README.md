@@ -106,7 +106,9 @@ Puedes ejecutarlo desde MySQL Workbench, consola o cualquier cliente compatible.
 3. **Configurar acceso a MySQL:**
 
 Edita el archivo [application.properties](./SCRIPTS/scripts_desarrollo/src/main/resources/application.properties) y coloca tus credenciales para la base de datos:
-
+```bash
+./SCRIPTS/scripts_desarrollo/src/main/resources/application.properties
+```
 ```properties
 spring.datasource.username=TU_USUARIO
 spring.datasource.password=TU_CONTRASEÑA
@@ -114,8 +116,7 @@ spring.datasource.password=TU_CONTRASEÑA
 
 4. **Asegúrate de tener instalado:**
 
-- Java 17
-- Maven
+- Java 17+
 
 5. **Moverte al proyecto Spring Boot:**
 
@@ -138,3 +139,24 @@ cd ./SCRIPTS/scripts_desarrollo
 8. **Abrir en navegador:**
 
 Visita [http://localhost:8080](http://localhost:8080) para acceder a la aplicación.
+
+**4.4**Haga un video donde se muestren los siguientes escenarios dentro de su aplicación:
+- Mostrar que los usuarios con el rol de Administrador pueden:
+    - Iniciar de sesión.
+    - Visualizar el histórico y filtrarlo.
+    - Registrar productos nuevos.
+    - Dar de baja productos.
+    - Reactivar productos.
+    - Agregar existencias a los productos.
+    - No pueden acceder al módulo para salida de material. 
+> [video 1](./videos/video1.mov)
+
+- Mostrar que los usuarios con el rol de Almacenista pueden:
+    - Iniciar de sesión.
+    - No pueden visualizar el histórico.
+    - Solo pueden visualizar el módulo de inventario. 
+    - Puede acceder al módulo para salida de material y sacar material.
+> [video 2](./videos/video2.mov)
+
+- Mostrar los mensajes de error que se consideraron en el escenario planteado.
+> [video 3](./videos/video3.mov)
