@@ -6,26 +6,11 @@
 <body>
     <h1>Inventario de Productos</h1>
 
-    <div th:if="${param.error}" style="color: red; margin-top: 10px;">
-        Ya existe un producto con ese nombre.
-    </div>
+    <!-- Mensajes de estado -->
+    <div th:if="${param.success}" style="color: green;">Operación realizada con éxito</div>
+    <div th:if="${param.error}" style="color: red;">[[${param.error}]]</div>
 
-    <div th:if="${param.success}" style="color: green; margin-top: 10px;">
-        Producto agregado con éxito.
-    </div>
-
-    <div th:if="${param.success == 'entrada'}" style="color: green; margin-top: 10px;">
-        Inventario actualizado correctamente.
-    </div>
-    
-    <div th:if="${param.error == 'cantidadInvalida'}" style="color: red; margin-top: 10px;">
-        La cantidad debe ser mayor a 0.
-    </div>
-    
-    <div th:if="${param.error == 'productoNoEncontrado'}" style="color: red; margin-top: 10px;">
-        El producto seleccionado no existe.
-    </div>
-
+    <!-- Bienvenida y logout -->
     <div style="display: flex; justify-content: space-between; align-items: center;">
         <p>Bienvenido <b th:text="${usuario}"></b></p>
         <form th:action="@{/logout}" method="post" style="margin: 0;">
@@ -33,6 +18,7 @@
         </form>
     </div>
 
+    <!-- Tabla de productos -->
     <table border="1" cellpadding="5" cellspacing="0" style="margin-top: 20px; width: 100%;">
         <thead>
             <tr>
@@ -44,7 +30,8 @@
             </tr>
         </thead>
         <tbody>
-            <tr th:each="p : ${productos}">
+            <tr th:each="p : ${productos}"
+                th:classappend="${p.estatus == 1} ? 'activo' : 'inactivo'">
                 <td th:text="${p.idProducto}">1</td>
                 <td th:text="${p.nombre}">Producto</td>
                 <td th:text="${p.descripcion}">Descripción</td>
@@ -54,17 +41,18 @@
         </tbody>
     </table>
 
+    <!-- Botones según el rol -->
     <div style="margin-top: 30px;">
         <div th:if="${rol == 'ROLE_ADMINISTRADOR'}">
             <button type="button" onclick="mostrarModal('modalAgregar')">Agregar producto</button>
             <button type="button" onclick="mostrarModal('modalEntrada')">Aumentar inventario</button>
-            <button type="submit">Dar de baja / Reactivar</button>
-            <button type="submit">Ver histórico</button>
+            <button type="button" onclick="mostrarModal('modalBaja')">Dar de baja</button>
+            <button type="button" onclick="mostrarModal('modalReactivar')">Reactivar</button>
+            <button type="button" onclick="mostrarModal('modalHistorico')">Ver histórico</button>
         </div>
-
         <div th:if="${rol == 'ROLE_ALMACENISTA'}">
-            <button type="submit">Sacar inventario</button>
-            <button type="submit">Ver salida de productos</button>
+            <button type="button" onclick="mostrarModal('modalSalida')">Sacar inventario</button>
+            <button type="button" onclick="mostrarModal('modalSalidas')">Ver salida de productos</button>
         </div>
     </div>
 
@@ -79,7 +67,6 @@
         width: 100%; height: 100%;
         background-color: rgba(0,0,0,0.5);
         justify-content: center; align-items: center;">
-        
         <div style="background: white; padding: 20px; border-radius: 8px; width: 300px;">
             <h3>Nuevo producto</h3>
             <form th:action="@{/productos/guardar}" method="post">
@@ -88,13 +75,13 @@
                 <input type="number" name="cantidad" placeholder="Cantidad inicial" value="0" readonly style="width: 100%; margin-bottom: 10px;" />
                 <div style="display: flex; justify-content: space-between;">
                     <button type="button" onclick="cerrarModal('modalAgregar')">Cancelar</button>
-                    <button type="submit">Guardar</button>
+                    <button type="submit">Crear</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Modal Aumentar inventario -->
+    <!-- Modal Entrada -->
     <div id="modalEntrada" style="
         display: flex;
         visibility: hidden;
@@ -104,10 +91,9 @@
         width: 100%; height: 100%;
         background-color: rgba(0,0,0,0.5);
         justify-content: center; align-items: center;">
-        
         <div style="background: white; padding: 20px; border-radius: 8px; width: 300px;">
             <h3>Entrada de producto</h3>
-            <form th:action="@{/inventario/entrada}" method="post">
+            <form th:action="@{/movimiento/entrada}" method="post">
                 <label for="idProducto">Producto:</label>
                 <select name="idProducto" required style="width: 100%; margin-bottom: 10px;">
                     <option th:each="p : ${productos}" th:value="${p.idProducto}" th:text="${p.nombre}"></option>
@@ -115,13 +101,198 @@
                 <input type="number" name="cantidad" placeholder="Cantidad a agregar" min="1" required style="width: 100%; margin-bottom: 10px;" />
                 <div style="display: flex; justify-content: space-between;">
                     <button type="button" onclick="cerrarModal('modalEntrada')">Cancelar</button>
-                    <button type="submit">Guardar</button>
+                    <button type="submit">Agregar</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Script para manejar los modales -->
+    <!-- Modal Salida -->
+    <div id="modalSalida" style="
+        display: flex;
+        visibility: hidden;
+        opacity: 0;
+        transition: visibility 0s, opacity 0.3s linear;
+        position: fixed; top: 0; left: 0;
+        width: 100%; height: 100%;
+        background-color: rgba(0,0,0,0.5);
+        justify-content: center; align-items: center;">
+        <div style="background: white; padding: 20px; border-radius: 8px; width: 300px;">
+            <h3>Salida de producto</h3>
+            <form th:action="@{/movimiento/salida}" method="post">
+                <label for="idProducto">Producto:</label>
+                <select name="idProducto" required style="width: 100%; margin-bottom: 10px;">
+                    <option th:each="p : ${activos}" th:value="${p.idProducto}" th:text="${p.nombre}"></option>
+                </select>
+                <input type="number" name="cantidad" placeholder="Cantidad a retirar" min="1" required style="width: 100%; margin-bottom: 10px;" />
+                <div style="display: flex; justify-content: space-between;">
+                    <button type="button" onclick="cerrarModal('modalSalida')">Cancelar</button>
+                    <button type="submit">Retirar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Baja -->
+    <div id="modalBaja" style="
+        display: flex;
+        visibility: hidden;
+        opacity: 0;
+        transition: visibility 0s, opacity 0.3s linear;
+        position: fixed; top: 0; left: 0;
+        width: 100%; height: 100%;
+        background-color: rgba(0,0,0,0.5);
+        justify-content: center; align-items: center;">
+        <div style="background: white; padding: 20px; border-radius: 8px; width: 300px;">
+            <h3>Dar de Baja Productos</h3>
+            <form th:action="@{/productos/baja}" method="post">
+                <label for="idProducto">Productos:</label>
+                <select name="idProducto" multiple required style="width: 100%; height: 150px; margin-bottom: 10px;">
+                    <option th:each="p : ${activos}" th:value="${p.idProducto}" th:text="${p.nombre}"></option>
+                </select>
+                <div style="display: flex; justify-content: space-between;">
+                    <button type="button" onclick="cerrarModal('modalBaja')">Cancelar</button>
+                    <button type="submit">Dar de baja</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Reactivar -->
+    <div id="modalReactivar" style="
+        display: flex;
+        visibility: hidden;
+        opacity: 0;
+        transition: visibility 0s, opacity 0.3s linear;
+        position: fixed; top: 0; left: 0;
+        width: 100%; height: 100%;
+        background-color: rgba(0,0,0,0.5);
+        justify-content: center; align-items: center;">
+        <div style="background: white; padding: 20px; border-radius: 8px; width: 300px;">
+            <h3>Reactivar Productos</h3>
+            <form th:action="@{/productos/alta}" method="post">
+                <label for="idProducto">Productos:</label>
+                <select name="idProducto" multiple required style="width: 100%; height: 150px; margin-bottom: 10px;">
+                    <option th:each="p : ${inactivos}" th:value="${p.idProducto}" th:text="${p.nombre}"></option>
+                </select>
+                <div style="display: flex; justify-content: space-between;">
+                    <button type="button" onclick="cerrarModal('modalReactivar')">Cancelar</button>
+                    <button type="submit">Reactivar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Histórico -->
+    <div id="modalHistorico" style="
+    display: flex;
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0s, opacity 0.3s linear;
+    position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    justify-content: center; align-items: center;">
+
+    <div style="background: white; padding: 20px; border-radius: 8px; width: 90%; max-height: 80%; overflow-y: auto;">
+        <h3>Histórico de Movimientos</h3>
+
+        <div style="margin-bottom: 10px;">
+            <label for="filtroTipo">Filtrar por tipo:</label>
+            <select id="filtroTipo" onchange="filtrarMovimientos()">
+                <option value="todos">Todos</option>
+                <option value="entrada">Entrada</option>
+                <option value="salida">Salida</option>
+            </select>
+        </div>
+
+        <table border="1" cellpadding="5" cellspacing="0" style="width: 100%;">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Producto</th>
+                    <th>Tipo</th>
+                    <th>Cantidad</th>
+                    <th>Fecha</th>
+                    <th>Usuario</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="m : ${movimientos}" th:classappend="'tipo-' + ${m.tipoMovimiento}">
+                    <td th:text="${m.idMovimiento}">1</td>
+                    <td th:text="${m.producto.nombre}">Producto</td>
+                    <td th:text="${m.tipoMovimiento}">entrada</td>
+                    <td th:text="${m.cantidad}">10</td>
+                    <td th:text="${#temporals.format(m.fechaHora, 'yyyy-MM-dd HH:mm')}">2025-05-09 20:00</td>
+                    <td th:text="${m.usuario.nombre}">Juan</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div style="margin-top: 10px; text-align: right;">
+            <button type="button" onclick="cerrarModal('modalHistorico')">Cerrar</button>
+        </div>
+    </div>
+    </div>
+
+    <!-- Script para filtrar por tipo -->
+    <script>
+    function filtrarMovimientos() {
+        const tipoSeleccionado = document.getElementById("filtroTipo").value;
+        const filas = document.querySelectorAll("#modalHistorico tbody tr");
+
+        filas.forEach(fila => {
+            if (tipoSeleccionado === "todos") {
+                fila.style.display = "";
+            } else {
+                fila.style.display = fila.classList.contains(`tipo-${tipoSeleccionado}`) ? "" : "none";
+            }
+        });
+    }
+    </script>
+
+    <!-- Modal Salidas-->
+    <div id="modalSalidas" style="
+    display: flex;
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0s, opacity 0.3s linear;
+    position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    justify-content: center; align-items: center;">
+
+    <div style="background: white; padding: 20px; border-radius: 8px; width: 90%; max-height: 80%; overflow-y: auto;">
+        <h3>Salidas de Productos</h3>
+
+        <table border="1" cellpadding="5" cellspacing="0" style="width: 100%;">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Producto</th>
+                    <th>Cantidad</th>
+                    <th>Fecha</th>
+                    <th>Usuario</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="m : ${movimientos}" th:if="${m.tipoMovimiento == 'salida'}">
+                    <td th:text="${m.idMovimiento}">1</td>
+                    <td th:text="${m.producto.nombre}">Producto</td>
+                    <td th:text="${m.cantidad}">5</td>
+                    <td th:text="${#temporals.format(m.fechaHora, 'yyyy-MM-dd HH:mm')}">2025-05-09 21:00</td>
+                    <td th:text="${m.usuario.nombre}">Usuario</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div style="margin-top: 10px; text-align: right;">
+            <button type="button" onclick="cerrarModal('modalSalidas')">Cerrar</button>
+        </div>
+    </div>
+    </div>
+
+    <!-- Script para modales -->
     <script>
         function mostrarModal(id) {
             const modal = document.getElementById(id);
@@ -132,10 +303,19 @@
         function cerrarModal(id) {
             const modal = document.getElementById(id);
             modal.style.opacity = '0';
-            setTimeout(() => {
-                modal.style.visibility = 'hidden';
-            }, 300);
+            setTimeout(() => modal.style.visibility = 'hidden', 300);
         }
     </script>
+
+    <!-- Estilo para productos activos e inactivos -->
+    <style>
+        .activo {
+            background-color: rgba(0, 200, 0, 0.1); /* Verde claro translúcido */
+        }
+
+        .inactivo {
+            background-color: rgba(255, 0, 0, 0.1); /* Rojo claro translúcido */
+        }
+    </style>
 </body>
 </html>

@@ -3,23 +3,30 @@ package com.pruebatecnica.castores.inventario.model;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "usuarios")
 public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_usuario")
     private Long idUsuario;
 
     private String nombre;
+
     private String correo;
+
     private String contrasena;
-    private String rol;
-    private int estatus = 1; // 1=activo, 0=inactivo
 
-    // Constructor vacío (requerido por JPA)
-    public Usuario() {}
+    @ManyToOne
+    @JoinColumn(name = "id_rol", nullable = false)
+    private Rol rol;
 
-    // Constructor con campos
-    public Usuario(String nombre, String correo, String contrasena, String rol) {
+    private int estatus;
+
+    public Usuario() {
+    }
+
+    public Usuario(String nombre, String correo, String contrasena, Rol rol) {
         this.nombre = nombre;
         this.correo = correo;
         this.contrasena = contrasena;
@@ -60,11 +67,11 @@ public class Usuario {
         this.contrasena = contrasena;
     }
 
-    public String getRol() {
+    public Rol getRol() {
         return rol;
     }
 
-    public void setRol(String rol) {
+    public void setRol(Rol rol) {
         this.rol = rol;
     }
 

@@ -1,6 +1,8 @@
 package com.pruebatecnica.castores.inventario.config;
 
+import com.pruebatecnica.castores.inventario.model.Rol;
 import com.pruebatecnica.castores.inventario.model.Usuario;
+import com.pruebatecnica.castores.inventario.repository.RolRepository;
 import com.pruebatecnica.castores.inventario.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.boot.CommandLineRunner;
@@ -23,25 +25,29 @@ public class DataLoader {
     private String almacenistaPassword;
 
     @Bean
-    public CommandLineRunner loadUsuarios(UsuarioRepository repo, BCryptPasswordEncoder encoder) {
+    public CommandLineRunner loadUsuarios(UsuarioRepository usuarioRepo, RolRepository rolRepo, BCryptPasswordEncoder encoder) {
         return args -> {
+            Rol rolAdmin = rolRepo.findByNombreRol("ADMINISTRADOR")
+                    .orElseThrow(() -> new RuntimeException("Rol ADMINISTRADOR no encontrado"));
+            Rol rolAlmacenista = rolRepo.findByNombreRol("ALMACENISTA")
+                    .orElseThrow(() -> new RuntimeException("Rol ALMACENISTA no encontrado"));
 
-            if (repo.findByCorreo(adminEmail).isEmpty()) {
-                repo.save(new Usuario(
+            if (usuarioRepo.findByCorreo(adminEmail).isEmpty()) {
+                usuarioRepo.save(new Usuario(
                         "Administrador",
                         adminEmail,
                         encoder.encode(adminPassword),
-                        "ADMINISTRADOR"
+                        rolAdmin
                 ));
                 System.out.println("Usuario ADMINISTRADOR creado: " + adminEmail);
             }
 
-            if (repo.findByCorreo(almacenistaEmail).isEmpty()) {
-                repo.save(new Usuario(
+            if (usuarioRepo.findByCorreo(almacenistaEmail).isEmpty()) {
+                usuarioRepo.save(new Usuario(
                         "Almacenista",
                         almacenistaEmail,
                         encoder.encode(almacenistaPassword),
-                        "ALMACENISTA"
+                        rolAlmacenista
                 ));
                 System.out.println("Usuario ALMACENISTA creado: " + almacenistaEmail);
             }

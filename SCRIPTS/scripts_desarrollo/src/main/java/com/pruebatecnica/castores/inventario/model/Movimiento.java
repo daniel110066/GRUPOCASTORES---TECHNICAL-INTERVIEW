@@ -9,32 +9,32 @@ public class Movimiento {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer idMovimiento;
+    @Column(name = "id_movimiento")
+    private Long idMovimiento;
 
     @ManyToOne
-    @JoinColumn(name = "idProducto", referencedColumnName = "idProducto", nullable = false)
+    @JoinColumn(name = "id_producto", nullable = false)
     private Producto producto;
-    
-    @Column(nullable = false)
+
+    @Column(name = "tipo_movimiento", nullable = false)
     private String tipoMovimiento;
 
     @Column(nullable = false)
     private int cantidad;
 
-    @Column(nullable = false)
+    @Column(name = "fecha_hora", nullable = false)
     private LocalDateTime fechaHora;
 
     @ManyToOne
-    @JoinColumn(name = "idUsuario", nullable = false)
+    @JoinColumn(name = "id_usuario", nullable = false)
     private Usuario usuario;
 
     // Getters y setters
-
-    public Integer getIdMovimiento() {
+    public Long getIdMovimiento() {
         return idMovimiento;
     }
 
-    public void setIdMovimiento(Integer idMovimiento) {
+    public void setIdMovimiento(Long idMovimiento) {
         this.idMovimiento = idMovimiento;
     }
 

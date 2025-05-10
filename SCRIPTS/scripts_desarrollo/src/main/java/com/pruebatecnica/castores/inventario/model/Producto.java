@@ -3,24 +3,30 @@ package com.pruebatecnica.castores.inventario.model;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "productos")
 public class Producto {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "idProducto")
-    private Integer idProducto;
+    @Column(name = "id_producto")
+    private Long idProducto;
 
     private String nombre;
+
     private String descripcion;
-    private int cantidad;
-    private int estatus = 1; // 1 = activo, 0 = inactivo
+
+    @Column(columnDefinition = "INT DEFAULT 0")
+    private int cantidad = 0;
+
+    @Column(columnDefinition = "INT DEFAULT 1")
+    private int estatus = 1;
 
     // Getters y setters
-    public Integer getIdProducto() {
+    public Long getIdProducto() {
         return idProducto;
     }
 
-    public void setIdProducto(Integer idProducto) {
+    public void setIdProducto(Long idProducto) {
         this.idProducto = idProducto;
     }
 
