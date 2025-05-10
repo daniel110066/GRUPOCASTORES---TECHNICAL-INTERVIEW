@@ -1,51 +1,52 @@
--- Crear la base de datos
-CREATE DATABASE IF NOT EXISTS technical_task_castores;
+
+#DROP DATABASE IF EXISTS technical_task_castores;
+CREATE DATABASE technical_task_castores;
 USE technical_task_castores;
 
 -- Tabla de roles
 CREATE TABLE roles (
-    idRol INT PRIMARY KEY,
-    nombreRol VARCHAR(50) NOT NULL
+    id_rol INT PRIMARY KEY,
+    nombre_rol VARCHAR(50) NOT NULL
 );
 
--- Inserción de roles
-INSERT INTO roles (idRol, nombreRol) VALUES
+-- Datos iniciales para roles
+INSERT INTO roles (id_rol, nombre_rol) VALUES
 (1, 'Administrador'),
 (2, 'Almacenista');
 
--- Tabla de usuarios (ya definida, incluida aquí para integridad)
+-- Tabla de usuarios
 CREATE TABLE usuarios (
-    idUsuario INT PRIMARY KEY,
+    id_usuario BIGINT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
     correo VARCHAR(50) UNIQUE NOT NULL,
-    contrasena VARCHAR(25) NOT NULL,
-    idRol INT NOT NULL,
+    contrasena VARCHAR(255) NOT NULL,
+    id_rol INT NOT NULL,
     estatus INT DEFAULT 1,
-    FOREIGN KEY (idRol) REFERENCES roles(idRol)
+    FOREIGN KEY (id_rol) REFERENCES roles(id_rol)
 );
 
 -- Tabla de productos
 CREATE TABLE productos (
-    idProducto INT AUTO_INCREMENT PRIMARY KEY,
+    id_producto BIGINT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
     descripcion TEXT,
     cantidad INT DEFAULT 0,
     estatus INT DEFAULT 1 -- 1=Activo, 0=Inactivo
 );
 
--- Tabla de movimientos (entradas y salidas)
+-- Tabla de movimientos
 CREATE TABLE movimientos (
-    idMovimiento INT AUTO_INCREMENT PRIMARY KEY,
-    idProducto INT NOT NULL,
-    tipoMovimiento ENUM('entrada', 'salida') NOT NULL,
+    id_movimiento BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id_producto BIGINT NOT NULL,
+    tipo_movimiento ENUM('entrada', 'salida') NOT NULL,
     cantidad INT NOT NULL,
-    fechaHora DATETIME DEFAULT CURRENT_TIMESTAMP,
-    idUsuario INT NOT NULL,
-    FOREIGN KEY (idProducto) REFERENCES productos(idProducto),
-    FOREIGN KEY (idUsuario) REFERENCES usuarios(idUsuario)
+    fecha_hora DATETIME DEFAULT CURRENT_TIMESTAMP,
+    id_usuario BIGINT NOT NULL,
+    FOREIGN KEY (id_producto) REFERENCES productos(id_producto),
+    FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario)
 );
 
--- Trigger para validar que no se puede hacer una salida con inventario insuficiente
+-- Trigger para validar inventario en salidas
 DELIMITER //
 
 CREATE TRIGGER validar_salida
@@ -54,8 +55,8 @@ FOR EACH ROW
 BEGIN
     DECLARE stock_actual INT;
 
-    IF NEW.tipoMovimiento = 'salida' THEN
-        SELECT cantidad INTO stock_actual FROM productos WHERE idProducto = NEW.idProducto;
+    IF NEW.tipo_movimiento = 'salida' THEN
+        SELECT cantidad INTO stock_actual FROM productos WHERE id_producto = NEW.id_producto;
 
         IF stock_actual < NEW.cantidad THEN
             SIGNAL SQLSTATE '45000'

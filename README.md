@@ -1,4 +1,4 @@
-# [Evaluación Técnica - Castores 2024](https://github.com/tu-usuario/tu-repositorio)
+# [Evaluación Técnica - Castores 2024](https://github.com/daniel110066/GRUPOCASTORES---TECHNICAL-INTERVIEW.git)
 
 ## Autor
 
@@ -55,45 +55,7 @@ LEFT JOIN ventas ON productos.idProducto = ventas.idProducto GROUP BY productos.
 ## 2. EJERCICIO PRÁCTICO: BD
 
 **2.1** Crea un `diagrama relacional` de BD para el escenario descrito anteriormente. 
-<div class="mermaid-container" style="padding: 20px;">
-  <div class="mermaid">
-    erDiagram
-        usuarios ||--o{ movimientos : realiza
-        roles ||--o{ usuarios : tiene
-        productos ||--o{ movimientos : afecta
-
-        roles {
-            INT idRol PK
-            VARCHAR nombreRol
-        }
-
-        usuarios {
-            INT idUsuario PK
-            VARCHAR nombre
-            VARCHAR correo
-            VARCHAR contrasena
-            INT idRol FK
-            INT estatus
-        }
-
-        productos {
-            INT idProducto PK
-            VARCHAR nombre
-            TEXT descripcion
-            INT cantidad
-            INT estatus
-        }
-
-        movimientos {
-            INT idMovimiento PK
-            INT idProducto FK
-            ENUM tipoMovimiento
-            INT cantidad
-            DATETIME fechaHora
-            INT idUsuario FK
-        }
-  </div>
-</div>
+![Diagrama ER](diagrama_er.png)
 
 **2.2** Hacer el `script` para crear las tablas del punto anterior
 > [➡️ script_base_de_datos.sql](./SCRIPTS/script_base_de_datos.sql)
@@ -101,11 +63,78 @@ LEFT JOIN ventas ON productos.idProducto = ventas.idProducto GROUP BY productos.
 ## 3. EJERCICIO PRÁCTICO: DESARROLLO
 
 **3.1**  Crear una aplicación WEB para el escenario que se planteó previamente.
-- Preferiblemente utilizar el diseño MVC para su desarrollo.
-- Preferiblemente utilizar JAVA.
-- Utilizar MySQL o SQLServer.
+- Preferiblemente utilizar el diseño `MVC` para su desarrollo.
+- Preferiblemente utilizar `JAVA`.
+- Utilizar `MySQL` o SQLServer.
+> Para este proyecto decidí usar ***Spring Boot*** como framework ***MVC*** porque me parece una de las mejores opciones si estoy trabajando con Java. Además, facilita bastante la conexión con ***MySQL*** y me permite manejar un esquema local de forma sencilla, lo que hace que todo el desarrollo sea mucho más ágil.
 
 ## 4. DOCUMENTACIÓN
 
+**4.1** Se   necesita   que   el   código   se   suba   en   un   repositorio   de  `GITHUB`  y   esté   público   para   que   pueda   ser
+descargado.
+> 👍 listo -> [GITHUB](https://github.com/daniel110066/GRUPOCASTORES---TECHNICAL-INTERVIEW.git)
 
+**4.2** Los scripts generados para la evaluación deben encontrarse en una carpeta llamada  `SCRIPTS`, dentro del
+repositorio de GITHUB.
+> 👍 listo -> [SCRIPTS](./SCRIPTS/)
 
+**4.3** Dentro del repositorio, debe haber un  README.md  donde se especifiquen los datos relevantes para el
+desarrollo:
+> - **IDE utilizado:** Visual Studio Code
+> - **Lenguaje de programación:** Java 17
+> - **DBMS utilizado:** MySQL 8
+
+#### Pasos para correr la aplicación
+
+1. **Clonar el proyecto desde GitHub:**
+
+```bash
+git clone https://github.com/daniel110066/GRUPOCASTORES---TECHNICAL-INTERVIEW.git
+cd GRUPOCASTORES---TECHNICAL-INTERVIEW
+```
+
+2. **Crear la base de datos:**
+
+Usa el siguiente script SQL ubicado en el repositorio para generar el esquema:
+
+```bash
+./SCRIPTS/script_base_de_datos.sql
+```
+
+Puedes ejecutarlo desde MySQL Workbench, consola o cualquier cliente compatible.
+
+3. **Configurar acceso a MySQL:**
+
+Edita el archivo [application.properties](./SCRIPTS/scripts_desarrollo/src/main/resources/application.properties) y coloca tus credenciales para la base de datos:
+
+```properties
+spring.datasource.username=TU_USUARIO
+spring.datasource.password=TU_CONTRASEÑA
+```
+
+4. **Asegúrate de tener instalado:**
+
+- Java 17
+- Maven
+
+5. **Moverte al proyecto Spring Boot:**
+
+```bash
+cd ./SCRIPTS/scripts_desarrollo
+```
+
+6. **Construir el proyecto:**
+
+```bash
+./mvnw clean install
+```
+
+7. **Ejecutar la aplicación:**
+
+```bash
+./mvnw spring-boot:run
+```
+
+8. **Abrir en navegador:**
+
+Visita [http://localhost:8080](http://localhost:8080) para acceder a la aplicación.
