@@ -149,14 +149,14 @@ Visita [http://localhost:8080](http://localhost:8080) para acceder a la aplicaci
     - Reactivar productos.
     - Agregar existencias a los productos.
     - No pueden acceder al módulo para salida de material. 
-> [video 1](./videos/video1.mov)
+> [video 1](https://drive.google.com/file/d/11APenj9MMTc-sFRl5z3bpBOwUEXYU7ad/view?usp=sharing)
 
 - Mostrar que los usuarios con el rol de Almacenista pueden:
     - Iniciar de sesión.
     - No pueden visualizar el histórico.
     - Solo pueden visualizar el módulo de inventario. 
     - Puede acceder al módulo para salida de material y sacar material.
-> [video 2](./videos/video2.mov)
+> [video 2](https://drive.google.com/file/d/1Wk-ry4c2--xvC6xdUQqmQdBorqh4l0qK/view?usp=sharing)
 
 - Mostrar los mensajes de error que se consideraron en el escenario planteado.
-> [video 3](./videos/video3.mov)
+> [video 3](https://drive.google.com/file/d/1eKw6Dy-H-Wl5BpaIIUpNWkttUBNmgeH7/view?usp=sharing)
